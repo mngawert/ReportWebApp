@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace ReportWebApp.Models
+namespace ReportWebApp.USSDModels
 {
     public partial class TOT_USSD_CDRContext : DbContext
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ReportWebApp.Models
+namespace ReportWebApp.USSDModels
 {
     public partial class TransCdr01
     {

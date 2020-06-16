@@ -6,27 +6,27 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ReportWebApp.Helper;
 using ReportWebApp.Models;
-using ReportWebApp.USSDModels;
+using ReportWebApp.IVRModels;
 using ReportWebApp.ViewModels;
 
 namespace ReportWebApp.ApiControllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class USSDController : ControllerBase
+    public class IVRController : ControllerBase
     {
-        private readonly TOT_USSD_CDRContext _USSDcontext;
+        private readonly TOT_IVR_CDRContext _IVRcontext;
 
-        public USSDController(TOT_USSD_CDRContext uSSDcontext)
+        public IVRController(TOT_IVR_CDRContext IVRcontext)
         {
-            _USSDcontext = uSSDcontext;
+            _IVRcontext = IVRcontext;
         }
 
         [HttpPost]
-        public IActionResult GetUSSDLogs(TransCdr01RequestViewModel model)
+        public IActionResult GetIVRLogs(TransCdr01RequestViewModel model)
         {
 
-            var q = _USSDcontext.TransCdr01
+            var q = _IVRcontext.TransCdr01
                 .Select(a => new TransCdr01ViewModel
                 {
                     SessionId = a.SessionId,
