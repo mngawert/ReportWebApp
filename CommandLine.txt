@@ -1,0 +1,15 @@
+﻿
+Scaffold-DbContext -OutputDir Models -ContextDir Context -Context AppDbContext -Force -Connection "User Id=dpemove;Password=dpemove;Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.2.13)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=OSRDDB2)))" Oracle.EntityFrameworkCore
+
+
+Scaffold-DbContext -OutputDir Models -ContextDir Context -Context AppDbContext -Force -Connection name="DPEMoveDatabase" Oracle.EntityFrameworkCore
+
+
+Scaffold-DbContext "server=192.168.1.106;port=3306;user=root;password=1234;database=TOT_USSD_CDR" MySql.Data.EntityFrameworkCore -OutputDir Models -Tables trans_cdr_01 -f
+
+Scaffold-DbContext -Connection name="TOT_USSD_CDR_Database" -OutputDir Models -Tables trans_cdr_01 -f MySql.Data.EntityFrameworkCore 
+
+
+
+
+
