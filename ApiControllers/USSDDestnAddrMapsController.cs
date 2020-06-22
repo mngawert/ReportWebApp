@@ -101,14 +101,22 @@ namespace ReportWebApp.ApiControllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<DestnAddrMap>> CreateDestnAddrMap(DestnAddrMap destnAddrMap)
+        public async Task<ActionResult<DestnAddrMap>> CreateDestnAddrMap(DestnAddrMapViewModel model)
         {
-            destnAddrMap.CreatedDate = DateTime.Now;
 
-            _context.DestnAddrMap.Add(destnAddrMap);
+            var q = new DestnAddrMap
+            {
+                DestnAddrName = model.DestnAddrName,
+                DestnAddrValue = model.DestnAddrValue,
+                DestnAddrStatus = model.DestnAddrStatus.Value,
+                CreatedDate = DateTime.Now,
+                CreatedBy = model.CreatedBy
+            };
+
+            _context.DestnAddrMap.Add(q);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetDestnAddrMap", new { id = destnAddrMap.DestnAddrId }, destnAddrMap);
+            return Ok(q);
         }
 
         // DELETE: api/DestnAddrMaps/5

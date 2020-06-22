@@ -9,7 +9,7 @@ Scaffold-DbContext "server=192.168.1.106;port=3306;user=root;password=1234;datab
 
 Scaffold-DbContext -Connection name="TOT_IVR_CDR_Database" -OutputDir IVRModels -Tables trans_cdr_01,destn_addr_map -f MySql.Data.EntityFrameworkCore 
 
-Scaffold-DbContext -Connection name="TOT_USSD_CDR_Database" -OutputDir USSDModels -Tables trans_cdr_01,destn_addr_map -f MySql.Data.EntityFrameworkCore 
+Scaffold-DbContext -Connection name="TOT_USSD_CDR_Database" -OutputDir USSDModels -Tables trans_cdr_01,destn_addr_map,user -f MySql.Data.EntityFrameworkCore 
 
 
 

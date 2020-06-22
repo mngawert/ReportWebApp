@@ -7,7 +7,7 @@ namespace ReportWebApp.ViewModels
 {
     public class DestnAddrMapViewModel
     {
-        public long DestnAddrId { get; set; }
+        public long? DestnAddrId { get; set; }
         public string DestnAddrName { get; set; }
         public string DestnAddrValue { get; set; }
         public int? DestnAddrStatus { get; set; }

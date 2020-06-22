@@ -75,6 +75,8 @@ namespace ReportWebApp.ViewModels
         //public string FeatureId { get; set; }
         //public long? Cgi { get; set; }
         //public int? MonthIndex { get; set; }
+        public string StartDate { get; set; }
+        public string EndDate { get; set; }
         public int? PageNumber { get; set; }
         public int? PageSize { get; set; }
     }

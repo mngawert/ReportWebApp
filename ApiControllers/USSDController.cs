@@ -45,6 +45,20 @@ namespace ReportWebApp.ApiControllers
             {
                 q = q.Where(a => a.DestinationAddress.Contains(model.DestinationAddress));
             }
+            if (!string.IsNullOrEmpty(model.StartDate))
+            {
+                var d = DateTime.Parse(model.StartDate);
+                q = q.Where(a => a.DeliveryTime >= d);
+            }
+            if (!string.IsNullOrEmpty(model.EndDate))
+            {
+                var d = DateTime.Parse(model.EndDate);
+                q = q.Where(a => a.DeliveryTime < d.AddDays(1));
+            }
+            if (model.MessageStatus != null)
+            {
+                q = q.Where(a => (a.MessageStatus == 1 ? 1 : 2) == model.MessageStatus);
+            }
 
             var qq = PaginatedList<TransCdr01ViewModel>.Create(q, model.PageNumber ?? 1, model.PageSize ?? 10).GetPaginatedData();
 

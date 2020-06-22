@@ -17,6 +17,7 @@ namespace ReportWebApp.USSDModels
 
         public virtual DbSet<DestnAddrMap> DestnAddrMap { get; set; }
         public virtual DbSet<TransCdr01> TransCdr01 { get; set; }
+        public virtual DbSet<User> User { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -230,6 +231,27 @@ namespace ReportWebApp.USSDModels
 
                 entity.Property(e => e.Vlr)
                     .HasColumnName("vlr")
+                    .HasMaxLength(30)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.ToTable("user");
+
+                entity.Property(e => e.UserId)
+                    .HasColumnName("user_id")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.Password)
+                    .IsRequired()
+                    .HasColumnName("password")
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UserName)
+                    .IsRequired()
+                    .HasColumnName("user_name")
                     .HasMaxLength(30)
                     .IsUnicode(false);
             });
