@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ReportWebApp.IVRModels
+namespace ReportWebApp.TOTVASModels
 {
     public partial class DestnAddrMap
     {
@@ -9,6 +9,7 @@ namespace ReportWebApp.IVRModels
         public string DestnAddrName { get; set; }
         public string DestnAddrValue { get; set; }
         public int DestnAddrStatus { get; set; }
+        public string DestnAddrType { get; set; }
         public DateTimeOffset? CreatedDate { get; set; }
         public int? CreatedBy { get; set; }
         public DateTimeOffset? UpdatedDate { get; set; }

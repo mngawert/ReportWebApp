@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ReportWebApp.USSDModels;
+using ReportWebApp.TOTVASModels;
 
 namespace ReportWebApp.ApiControllers
 {
@@ -12,9 +12,9 @@ namespace ReportWebApp.ApiControllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly TOT_USSD_CDRContext _context;
+        private readonly TOT_VASContext _context;
 
-        public UserController(TOT_USSD_CDRContext context)
+        public UserController(TOT_VASContext context)
         {
             _context = context;
         }

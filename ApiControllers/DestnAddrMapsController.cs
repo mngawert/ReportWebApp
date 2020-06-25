@@ -6,18 +6,19 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReportWebApp.Helper;
-using ReportWebApp.IVRModels;
+using ReportWebApp.Models;
+using ReportWebApp.TOTVASModels;
 using ReportWebApp.ViewModels;
 
 namespace ReportWebApp.ApiControllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class IVRDestnAddrMapsController : ControllerBase
+    public class DestnAddrMapsController : ControllerBase
     {
-        private readonly TOT_IVR_CDRContext _context;
+        private readonly TOT_VASContext _context;
 
-        public IVRDestnAddrMapsController(TOT_IVR_CDRContext context)
+        public DestnAddrMapsController(TOT_VASContext context)
         {
             _context = context;
         }
@@ -39,6 +40,10 @@ namespace ReportWebApp.ApiControllers
             if (model.DestnAddrStatus != null)
             {
                 q = q.Where(a => a.DestnAddrStatus == model.DestnAddrStatus);
+            }
+            if (!string.IsNullOrEmpty(model.DestnAddrType))
+            {
+                q = q.Where(a => a.DestnAddrType.Contains(model.DestnAddrType));
             }
 
             var qq = PaginatedList<DestnAddrMap>.Create(q, model.PageNumber ?? 1, model.PageSize ?? 10).GetPaginatedData();
@@ -72,6 +77,7 @@ namespace ReportWebApp.ApiControllers
                 q.DestnAddrName = model.DestnAddrName;
                 q.DestnAddrValue = model.DestnAddrValue;
                 q.DestnAddrStatus = model.DestnAddrStatus;
+                q.DestnAddrType = model.DestnAddrType;
                 q.UpdatedDate = DateTime.Now;
                 q.UpdatedBy = model.UpdatedBy;
 
@@ -101,14 +107,23 @@ namespace ReportWebApp.ApiControllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<DestnAddrMap>> CreateDestnAddrMap(DestnAddrMap destnAddrMap)
+        public async Task<ActionResult<DestnAddrMap>> CreateDestnAddrMap(DestnAddrMapViewModel model)
         {
-            destnAddrMap.CreatedDate = DateTime.Now;
 
-            _context.DestnAddrMap.Add(destnAddrMap);
+            var q = new DestnAddrMap
+            {
+                DestnAddrName = model.DestnAddrName,
+                DestnAddrValue = model.DestnAddrValue,
+                DestnAddrStatus = model.DestnAddrStatus.Value,
+                DestnAddrType = model.DestnAddrType,
+                CreatedDate = DateTime.Now,
+                CreatedBy = model.CreatedBy
+            };
+
+            _context.DestnAddrMap.Add(q);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetDestnAddrMap", new { id = destnAddrMap.DestnAddrId }, destnAddrMap);
+            return Ok(q);
         }
 
         // DELETE: api/DestnAddrMaps/5

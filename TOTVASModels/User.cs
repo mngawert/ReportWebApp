@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ReportWebApp.USSDModels
+namespace ReportWebApp.TOTVASModels
 {
     public partial class User
     {

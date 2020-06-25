@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ReportWebApp.IVRModels;
 using ReportWebApp.Models;
+using ReportWebApp.TOTVASModels;
 using ReportWebApp.USSDModels;
 
 namespace ReportWebApp
@@ -32,7 +33,7 @@ namespace ReportWebApp
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
             });
 
-
+            services.AddDbContext<TOT_VASContext>(options => options.UseMySQL(Configuration["ConnectionStrings:TOT_VAS_Database"]));
             services.AddDbContext<TOT_IVR_CDRContext>(options => options.UseMySQL(Configuration["ConnectionStrings:TOT_IVR_CDR_Database"]));
             services.AddDbContext<TOT_USSD_CDRContext>(options => options.UseMySQL(Configuration["ConnectionStrings:TOT_USSD_CDR_Database"]));
 

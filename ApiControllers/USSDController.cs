@@ -97,5 +97,21 @@ namespace ReportWebApp.ApiControllers
             return Ok(q);
         }
 
+        [HttpPost]
+        public IActionResult GetDashboardReport1(DashboardReport1Request model)
+        {
+            string sql = @"
+                            select destination_address as DestinationAddress, count(1) as TotalCount
+                            from trans_cdr_01 a
+                            where date_format(a.delivery_time, '%Y') = {0}
+                            group by destination_address
+                            order by 2 desc
+                            ";
+
+            var q = _USSDcontext.DashboardReport1ViewModel.FromSqlRaw(sql, model.Year);
+
+            return Ok(q);
+        }
+
     }
 }

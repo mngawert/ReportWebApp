@@ -15,7 +15,6 @@ namespace ReportWebApp.IVRModels
         {
         }
 
-        public virtual DbSet<DestnAddrMap> DestnAddrMap { get; set; }
         public virtual DbSet<TransCdr01> TransCdr01 { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -28,50 +27,6 @@ namespace ReportWebApp.IVRModels
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<DestnAddrMap>(entity =>
-            {
-                entity.HasKey(e => e.DestnAddrId)
-                    .HasName("PRIMARY");
-
-                entity.ToTable("destn_addr_map");
-
-                entity.Property(e => e.DestnAddrId)
-                    .HasColumnName("destn_addr_id")
-                    .HasColumnType("bigint(25)");
-
-                entity.Property(e => e.CreatedBy)
-                    .HasColumnName("created_by")
-                    .HasColumnType("int(11)");
-
-                entity.Property(e => e.CreatedDate)
-                    .HasColumnName("created_date")
-                    .HasColumnType("timestamp(3)");
-
-                entity.Property(e => e.DestnAddrName)
-                    .IsRequired()
-                    .HasColumnName("destn_addr_name")
-                    .HasMaxLength(30)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.DestnAddrStatus)
-                    .HasColumnName("destn_addr_status")
-                    .HasColumnType("int(4)");
-
-                entity.Property(e => e.DestnAddrValue)
-                    .IsRequired()
-                    .HasColumnName("destn_addr_value")
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UpdatedBy)
-                    .HasColumnName("updated_by")
-                    .HasColumnType("int(11)");
-
-                entity.Property(e => e.UpdatedDate)
-                    .HasColumnName("updated_date")
-                    .HasColumnType("timestamp(3)");
-            });
-
             modelBuilder.Entity<TransCdr01>(entity =>
             {
                 entity.HasNoKey();
