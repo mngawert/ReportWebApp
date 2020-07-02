@@ -13,6 +13,7 @@ Scaffold-DbContext -Connection name="TOT_USSD_CDR_Database" -OutputDir USSDModel
 
 Scaffold-DbContext -Connection name="TOT_VAS_Database" -OutputDir TOTVASModels -Tables destn_addr_map,user -f MySql.Data.EntityFrameworkCore 
 
+Scaffold-DbContext -Connection name="TOT_VAS_Database" -OutputDir TOTVASModels Microsoft.EntityFrameworkCore.Sqlite -f
 
 
 

@@ -16,9 +16,9 @@ namespace ReportWebApp.ApiControllers
     [ApiController]
     public class DestnAddrMapsController : ControllerBase
     {
-        private readonly TOT_VASContext _context;
+        private readonly TOTVASContext _context;
 
-        public DestnAddrMapsController(TOT_VASContext context)
+        public DestnAddrMapsController(TOTVASContext context)
         {
             _context = context;
         }
@@ -78,8 +78,6 @@ namespace ReportWebApp.ApiControllers
                 q.DestnAddrValue = model.DestnAddrValue;
                 q.DestnAddrStatus = model.DestnAddrStatus;
                 q.DestnAddrType = model.DestnAddrType;
-                q.UpdatedDate = DateTime.Now;
-                q.UpdatedBy = model.UpdatedBy;
 
                 _context.Entry(q).State = EntityState.Modified;
             }
@@ -116,8 +114,6 @@ namespace ReportWebApp.ApiControllers
                 DestnAddrValue = model.DestnAddrValue,
                 DestnAddrStatus = model.DestnAddrStatus.Value,
                 DestnAddrType = model.DestnAddrType,
-                CreatedDate = DateTime.Now,
-                CreatedBy = model.CreatedBy
             };
 
             _context.DestnAddrMap.Add(q);

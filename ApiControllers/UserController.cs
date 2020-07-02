@@ -12,9 +12,9 @@ namespace ReportWebApp.ApiControllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly TOT_VASContext _context;
+        private readonly TOTVASContext _context;
 
-        public UserController(TOT_VASContext context)
+        public UserController(TOTVASContext context)
         {
             _context = context;
         }
