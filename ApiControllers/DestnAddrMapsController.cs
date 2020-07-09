@@ -46,7 +46,7 @@ namespace ReportWebApp.ApiControllers
                 q = q.Where(a => a.DestnAddrType.Contains(model.DestnAddrType));
             }
 
-            var qq = PaginatedList<DestnAddrMap>.Create(q, model.PageNumber ?? 1, model.PageSize ?? 10).GetPaginatedData();
+            var qq = PaginatedList<DestnAddrMap>.Create(q.ToList(), model.PageNumber ?? 1, model.PageSize ?? 10).GetPaginatedData();
 
             return Ok(qq);
         }

@@ -9,10 +9,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using ReportWebApp.IVRModels;
 using ReportWebApp.Models;
 using ReportWebApp.TOTVASModels;
 using ReportWebApp.USSDModels;
+using ReportWebApp.VOICEModels;
 
 namespace ReportWebApp
 {
@@ -34,8 +34,8 @@ namespace ReportWebApp
             });
 
             services.AddDbContext<TOTVASContext>(options => options.UseSqlite(Configuration["ConnectionStrings:TOT_VAS_Database"]));
-            services.AddDbContext<TOT_IVR_CDRContext>(options => options.UseMySQL(Configuration["ConnectionStrings:TOT_IVR_CDR_Database"]));
             services.AddDbContext<TOT_USSD_CDRContext>(options => options.UseMySQL(Configuration["ConnectionStrings:TOT_USSD_CDR_Database"]));
+            services.AddDbContext<TOT_VOICE_CDRContext>(options => options.UseMySQL(Configuration["ConnectionStrings:TOT_VOICE_CDR_Database"]));
 
             services.AddControllersWithViews();
         }

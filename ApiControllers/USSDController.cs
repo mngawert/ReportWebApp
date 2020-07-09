@@ -16,29 +16,27 @@ namespace ReportWebApp.ApiControllers
     [ApiController]
     public class USSDController : ControllerBase
     {
-        private readonly TOT_USSD_CDRContext _USSDcontext;
+        private readonly TOT_USSD_CDRContext _context;
 
-        public USSDController(TOT_USSD_CDRContext uSSDcontext)
+        public USSDController(TOT_USSD_CDRContext context)
         {
-            _USSDcontext = uSSDcontext;
+            _context = context;
         }
 
         [HttpPost]
-        public IActionResult GetUSSDLogs(TransCdr01RequestViewModel model)
+        public IActionResult GetReport(TransCdr01RequestViewModel model)
         {
-
             string sql = @"
-                            SELECT  Session_Id as SessionId,
-                                    Transaction_Id as TransactionId,
+                            SELECT  Transaction_Id as TransactionId,
                                     Delivery_Time as DeliveryTime,
                                     Origination_Address as OriginationAddress,
                                     Destination_Address as DestinationAddress, 
                                     Message_Status as MessageStatus 
                             FROM TRANS_CDR_01";
             
-            var q = _USSDcontext.Report1ViewModel.FromSqlRaw(sql);
+            var q = _context.Report1ViewModel.FromSqlRaw(sql);
 
-            //var q = _USSDcontext.TransCdr01
+            //var q = _context.TransCdr01
             //    .Select(a => new TransCdr01ViewModel
             //    {
             //        SessionId = a.SessionId,
@@ -77,12 +75,9 @@ namespace ReportWebApp.ApiControllers
             return Ok(qq);
         }
 
-
-
         [HttpPost]
         public IActionResult GetMngmtReport(MngmtReportRequest model)
         {
-
             string sql = @"
                             select date_format(a.delivery_time, '%Y-%m') as Id, date_format(a.delivery_time, '%M') as Month, count(1) as TotalCount, sum( case when message_status = 1 then 1 else 0 end) as SuccessCount, sum( case when message_status = 1 then 0 else 1 end) as FailCount
                             from trans_cdr_01 a
@@ -92,7 +87,7 @@ namespace ReportWebApp.ApiControllers
                             order by 1
                             ";
 
-            var q = _USSDcontext.MngmtReportViewModel.FromSqlRaw(sql, model.Year, model.DestinationAddress);
+            var q = _context.MngmtReportViewModel.FromSqlRaw(sql, model.Year, model.DestinationAddress);
 
             return Ok(q);
         }
@@ -108,7 +103,7 @@ namespace ReportWebApp.ApiControllers
                             order by 2 desc
                             ";
 
-            var q = _USSDcontext.DashboardReport1ViewModel.FromSqlRaw(sql, model.Year);
+            var q = _context.DashboardReport1ViewModel.FromSqlRaw(sql, model.Year);
 
             return Ok(q);
         }

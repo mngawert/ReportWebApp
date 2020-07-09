@@ -7,7 +7,7 @@ namespace ReportWebApp.ViewModels
 {
     public class TransCdr01ViewModel
     {
-        public long SessionId { get; set; }
+        //public long SessionId { get; set; }
         public long TransactionId { get; set; }
         //public DateTimeOffset ReceiptTimestamp { get; set; }
         public DateTimeOffset DeliveryTime { get; set; }
@@ -43,7 +43,7 @@ namespace ReportWebApp.ViewModels
 
     public class TransCdr01RequestViewModel
     {
-        public long SessionId { get; set; }
+        //public long SessionId { get; set; }
         public long TransactionId { get; set; }
         //public DateTimeOffset ReceiptTimestamp { get; set; }
         public DateTimeOffset DeliveryTime { get; set; }

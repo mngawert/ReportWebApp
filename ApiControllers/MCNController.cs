@@ -14,11 +14,11 @@ namespace ReportWebApp.ApiControllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class IVRController : ControllerBase
+    public class MCNController : ControllerBase
     {
         private readonly TOT_VOICE_CDRContext _context;
 
-        public IVRController(TOT_VOICE_CDRContext context)
+        public MCNController(TOT_VOICE_CDRContext context)
         {
             _context = context;
         }
@@ -34,12 +34,12 @@ namespace ReportWebApp.ApiControllers
                                     Message_Status as MessageStatus 
                             FROM 
                             (
-                                SELECT  CALL_START_TIME as Delivery_Time,
+                                SELECT  CALL_TIMESTAMP as Delivery_Time,
                                         TRANSACTION_ID as Transaction_Id,
-                                        CALLING_PARTY as Origination_Address,
-                                        CALLED_PARTY as Destination_Address, 
-                                        STATUS_CODE as Message_Status
-                                FROM CALL_IVR_CC_01
+                                        ORIGINATING_ADDRESS as Origination_Address,
+                                        DESTINATING_ADDRESS as Destination_Address, 
+                                        STATUS as Message_Status
+                                FROM MCA_VMS_CC_01
                             ) a
                             ";
 
@@ -91,12 +91,12 @@ namespace ReportWebApp.ApiControllers
                             select date_format(a.delivery_time, '%Y-%m') as Id, date_format(a.delivery_time, '%M') as Month, count(1) as TotalCount, sum( case when message_status = 1 then 1 else 0 end) as SuccessCount, sum( case when message_status = 1 then 0 else 1 end) as FailCount
                             from 
                             (
-                                SELECT  CALL_START_TIME as Delivery_Time,
+                                SELECT  CALL_TIMESTAMP as Delivery_Time,
                                         TRANSACTION_ID as Transaction_Id,
-                                        CALLING_PARTY as Origination_Address,
-                                        CALLED_PARTY as Destination_Address, 
-                                        STATUS_CODE as Message_Status
-                                FROM CALL_IVR_CC_01
+                                        ORIGINATING_ADDRESS as Origination_Address,
+                                        DESTINATING_ADDRESS as Destination_Address, 
+                                        STATUS as Message_Status
+                                FROM MCA_VMS_CC_01
                             ) a
                             where date_format(a.delivery_time, '%Y') = {0}
                             and destination_address = {1}
@@ -116,12 +116,12 @@ namespace ReportWebApp.ApiControllers
                             select destination_address as DestinationAddress, count(1) as TotalCount
                             from 
                             (
-                                SELECT  CALL_START_TIME as Delivery_Time,
+                                SELECT  CALL_TIMESTAMP as Delivery_Time,
                                         TRANSACTION_ID as Transaction_Id,
-                                        CALLING_PARTY as Origination_Address,
-                                        CALLED_PARTY as Destination_Address, 
-                                        STATUS_CODE as Message_Status
-                                FROM CALL_IVR_CC_01
+                                        ORIGINATING_ADDRESS as Origination_Address,
+                                        DESTINATING_ADDRESS as Destination_Address, 
+                                        STATUS as Message_Status
+                                FROM MCA_VMS_CC_01
                             ) a
                             where date_format(a.delivery_time, '%Y') = {0}
                             group by destination_address
