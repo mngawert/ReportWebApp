@@ -80,7 +80,7 @@ namespace ReportWebApp.ApiControllers
         {
             string sql = @"
                             select date_format(a.delivery_time, '%Y-%m') as Id, date_format(a.delivery_time, '%M') as Month, count(1) as TotalCount, sum( case when message_status = 1 then 1 else 0 end) as SuccessCount, sum( case when message_status = 1 then 0 else 1 end) as FailCount
-                            from trans_cdr_01 a
+                            from TRANS_CDR_01 a
                             where date_format(a.delivery_time, '%Y') = {0}
                             and destination_address = {1}
                             group by date_format(a.delivery_time, '%Y-%m'), date_format(a.delivery_time, '%M')
@@ -97,13 +97,13 @@ namespace ReportWebApp.ApiControllers
         {
             string sql = @"
                             select destination_address as DestinationAddress, count(1) as TotalCount
-                            from trans_cdr_01 a
+                            from TRANS_CDR_01 a
                             where date_format(a.delivery_time, '%Y') = {0}
                             group by destination_address
                             order by 2 desc
                             ";
 
-            var q = _context.DashboardReport1ViewModel.FromSqlRaw(sql, model.Year);
+            var q = _context.DashboardReport1ViewModel.FromSqlRaw(sql, model.Year).Take(10);
 
             return Ok(q);
         }

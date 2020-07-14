@@ -45,9 +45,9 @@ namespace ReportWebApp.TOTVASModels
             {
                 entity.Property(e => e.UserId).ValueGeneratedOnAdd();
 
-                entity.Property(e => e.Group).IsRequired();
-
                 entity.Property(e => e.Password).IsRequired();
+
+                entity.Property(e => e.UserGroup).IsRequired();
 
                 entity.Property(e => e.UserName).IsRequired();
             });

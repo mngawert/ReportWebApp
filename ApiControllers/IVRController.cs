@@ -128,7 +128,7 @@ namespace ReportWebApp.ApiControllers
                             order by 2 desc
                             ";
 
-            var q = _context.DashboardReport1ViewModel.FromSqlRaw(sql, model.Year);
+            var q = _context.DashboardReport1ViewModel.FromSqlRaw(sql, model.Year).Take(10);
 
             return Ok(q);
         }
