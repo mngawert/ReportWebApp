@@ -29,6 +29,7 @@ namespace ReportWebApp.ApiControllers
             string sql = @"
                             SELECT  Transaction_Id as TransactionId,
                                     Delivery_Time as DeliveryTime,
+                                    date_format(Delivery_Time, '%d %M %Y %T') as DeliveryTimeText,
                                     Origination_Address as OriginationAddress,
                                     Destination_Address as DestinationAddress, 
                                     Message_Status as MessageStatus 
