@@ -32,7 +32,7 @@ namespace ReportWebApp.ApiControllers
                                     date_format(Delivery_Time, '%d %M %Y %T') as DeliveryTimeText,
                                     Origination_Address as OriginationAddress,
                                     Destination_Address as DestinationAddress, 
-                                    Message_Status as MessageStatus 
+                                    IF(Message_Status=255, 1, 2) as MessageStatus 
                             FROM 
                             (
                                 SELECT  CALL_TIMESTAMP as Delivery_Time,
@@ -45,17 +45,6 @@ namespace ReportWebApp.ApiControllers
                             ";
 
             var q = _context.Report1ViewModel.FromSqlRaw(sql);
-
-            //var q = _context.TransCdr01
-            //    .Select(a => new TransCdr01ViewModel
-            //    {
-            //        SessionId = a.SessionId,
-            //        TransactionId = a.TransactionId,
-            //        DeliveryTime = a.DeliveryTime,
-            //        OriginationAddress = a.OriginationAddress,
-            //        DestinationAddress = a.DestinationAddress,
-            //        MessageStatus = a.MessageStatus
-            //    });
 
             if (!string.IsNullOrEmpty(model.OriginationAddress))
             {
@@ -77,8 +66,10 @@ namespace ReportWebApp.ApiControllers
             }
             if (model.MessageStatus != null)
             {
-                q = q.Where(a => (a.MessageStatus == 1 ? 1 : 2) == model.MessageStatus);
+                q = q.Where(a => a.MessageStatus == model.MessageStatus);
             }
+
+            q = q.OrderByDescending(a => a.DeliveryTime);
 
             var qq = PaginatedList<Report1ViewModel>.Create(q, model.PageNumber ?? 1, model.PageSize ?? 10).GetPaginatedData();
 
@@ -89,7 +80,7 @@ namespace ReportWebApp.ApiControllers
         public IActionResult GetMngmtReport(MngmtReportRequest model)
         {
             string sql = @"
-                            select date_format(a.delivery_time, '%Y-%m') as Id, date_format(a.delivery_time, '%M') as Month, count(1) as TotalCount, sum( case when message_status = 1 then 1 else 0 end) as SuccessCount, sum( case when message_status = 1 then 0 else 1 end) as FailCount
+                            select date_format(a.delivery_time, '%Y-%m') as Id, date_format(a.delivery_time, '%M') as Month, count(1) as TotalCount, sum( case when message_status = 255 then 1 else 0 end) as SuccessCount, sum( case when message_status = 255 then 0 else 1 end) as FailCount
                             from 
                             (
                                 SELECT  CALL_TIMESTAMP as Delivery_Time,
