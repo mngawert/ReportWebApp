@@ -40,7 +40,11 @@ namespace ReportWebApp.ApiControllers
                                         CALLING_PARTY as Origination_Address,
                                         CALLED_PARTY as Destination_Address, 
                                         STATUS_CODE as Message_Status
-                                FROM CALL_IVR_CC_01
+                                FROM 
+                                (
+                                    select * from CALL_IVR_CC_01 UNION ALL select * from CALL_IVR_CC_02 UNION ALL select * from CALL_IVR_CC_03 UNION ALL select * from CALL_IVR_CC_04 UNION ALL select * from CALL_IVR_CC_05 UNION ALL select * from CALL_IVR_CC_06 UNION ALL select * from CALL_IVR_CC_07 UNION ALL select * from CALL_IVR_CC_08 UNION ALL select * from CALL_IVR_CC_09 UNION ALL select * from CALL_IVR_CC_10 UNION ALL
+                                    select * from CALL_IVR_CC_11 UNION ALL select * from CALL_IVR_CC_12
+                                ) a
                             ) a
                             ";
 
@@ -88,7 +92,11 @@ namespace ReportWebApp.ApiControllers
                                         CALLING_PARTY as Origination_Address,
                                         CALLED_PARTY as Destination_Address, 
                                         STATUS_CODE as Message_Status
-                                FROM CALL_IVR_CC_01
+                                FROM 
+                                (
+                                    select * from CALL_IVR_CC_01 UNION ALL select * from CALL_IVR_CC_02 UNION ALL select * from CALL_IVR_CC_03 UNION ALL select * from CALL_IVR_CC_04 UNION ALL select * from CALL_IVR_CC_05 UNION ALL select * from CALL_IVR_CC_06 UNION ALL select * from CALL_IVR_CC_07 UNION ALL select * from CALL_IVR_CC_08 UNION ALL select * from CALL_IVR_CC_09 UNION ALL select * from CALL_IVR_CC_10 UNION ALL
+                                    select * from CALL_IVR_CC_11 UNION ALL select * from CALL_IVR_CC_12
+                                ) a
                             ) a
                             where date_format(a.delivery_time, '%Y') = {0}
                             and destination_address = {1}
@@ -113,9 +121,14 @@ namespace ReportWebApp.ApiControllers
                                         CALLING_PARTY as Origination_Address,
                                         CALLED_PARTY as Destination_Address, 
                                         STATUS_CODE as Message_Status
-                                FROM CALL_IVR_CC_01
+                                FROM 
+                                (
+                                    select * from CALL_IVR_CC_01 UNION ALL select * from CALL_IVR_CC_02 UNION ALL select * from CALL_IVR_CC_03 UNION ALL select * from CALL_IVR_CC_04 UNION ALL select * from CALL_IVR_CC_05 UNION ALL select * from CALL_IVR_CC_06 UNION ALL select * from CALL_IVR_CC_07 UNION ALL select * from CALL_IVR_CC_08 UNION ALL select * from CALL_IVR_CC_09 UNION ALL select * from CALL_IVR_CC_10 UNION ALL
+                                    select * from CALL_IVR_CC_11 UNION ALL select * from CALL_IVR_CC_12
+                                ) a
                             ) a
                             where date_format(a.delivery_time, '%Y') = {0}
+                            and Message_Status = 255
                             group by destination_address
                             order by 2 desc
                             ";
