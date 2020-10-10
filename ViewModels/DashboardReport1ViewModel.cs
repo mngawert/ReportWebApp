@@ -13,6 +13,8 @@ namespace ReportWebApp.ViewModels
     public class DashboardReport1Request
     {
         public string Year { get; set; }
+        public string Month { get; set; }
+        public string MessageStatus { get; set; }
         public string DestinationAddress { get; set; }
         public int? PageNumber { get; set; }
         public int? PageSize { get; set; }

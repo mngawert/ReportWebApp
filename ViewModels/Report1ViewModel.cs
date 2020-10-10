@@ -8,7 +8,7 @@ namespace ReportWebApp.ViewModels
     public class Report1ViewModel
     {
         //public long SessionId { get; set; }
-        public long TransactionId { get; set; }
+        public string TransactionId { get; set; }
         public DateTimeOffset? DeliveryTime { get; set; }
         public string DeliveryTimeText { get; set; }
         public int? MessageStatus { get; set; }

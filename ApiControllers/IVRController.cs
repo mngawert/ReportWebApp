@@ -28,7 +28,7 @@ namespace ReportWebApp.ApiControllers
         {
             string sql = @"
                             SELECT  Transaction_Id as TransactionId,
-                                    Delivery_Time as DeliveryTime,
+                                    IF(Delivery_Time='0000-00-00 00:00:00.000',NULL,Delivery_Time) as DeliveryTime,
                                     date_format(Delivery_Time, '%d %M %Y %T') as DeliveryTimeText,
                                     Origination_Address as OriginationAddress,
                                     Destination_Address as DestinationAddress, 
@@ -127,13 +127,14 @@ namespace ReportWebApp.ApiControllers
                                     select * from CALL_IVR_CC_11 UNION ALL select * from CALL_IVR_CC_12
                                 ) a
                             ) a
-                            where date_format(a.delivery_time, '%Y') = {0}
-                            and Message_Status = 255
+                            where Message_Status = 255
+                            and date_format(a.delivery_time, '%Y') = {0}
+                            and (date_format(a.delivery_time, '%m') = {1} OR {1} = '')
                             group by destination_address
                             order by 2 desc
                             ";
 
-            var q = _context.DashboardReport1ViewModel.FromSqlRaw(sql, model.Year).Take(10);
+            var q = _context.DashboardReport1ViewModel.FromSqlRaw(sql, model.Year, model.Month).Take(10);
 
             return Ok(q);
         }

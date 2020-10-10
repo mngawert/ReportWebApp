@@ -28,10 +28,10 @@ namespace ReportWebApp.ApiControllers
         {
             string sql = @"
                             SELECT  Transaction_Id as TransactionId,
-                                    Delivery_Time as DeliveryTime,
+                                    IF(Delivery_Time='0000-00-00 00:00:00.000',NULL,Delivery_Time) as DeliveryTime,
                                     date_format(Delivery_Time, '%d %M %Y %T') as DeliveryTimeText,
                                     Origination_Address as OriginationAddress,
-                                    Destination_Address as DestinationAddress, 
+                                    user_data as DestinationAddress, 
                                     IF(Message_Status=255, 1, 2) as MessageStatus 
                             from 
                             (
@@ -87,7 +87,7 @@ namespace ReportWebApp.ApiControllers
                                 select * from TRANS_CDR_21 UNION ALL select * from TRANS_CDR_22 UNION ALL select * from TRANS_CDR_23 UNION ALL select * from TRANS_CDR_24 UNION ALL select * from TRANS_CDR_25 UNION ALL select * from TRANS_CDR_26 UNION ALL select * from TRANS_CDR_27 UNION ALL select * from TRANS_CDR_28 UNION ALL select * from TRANS_CDR_29 UNION ALL select * from TRANS_CDR_30 UNION ALL 
                                 select * from TRANS_CDR_31 
                             ) a
-                            where message_type = 1
+                            where message_type in (1, 4)
                             and date_format(a.delivery_time, '%Y') = {0}
                             and destination_address = {1}
                             group by date_format(a.delivery_time, '%Y-%m'), date_format(a.delivery_time, '%M')
@@ -102,6 +102,7 @@ namespace ReportWebApp.ApiControllers
         [HttpPost]
         public IActionResult GetDashboardReport1(DashboardReport1Request model)
         {
+
             string sql = @"
                             select destination_address as DestinationAddress, count(1) as TotalCount
                             from 
@@ -112,13 +113,14 @@ namespace ReportWebApp.ApiControllers
                                 select * from TRANS_CDR_31 
                             ) a
                             where message_type = 1
-                            and Message_Status = 255
+                            and IF(Message_Status = 255, 'Success', 'Fail') = {2}
                             and date_format(a.delivery_time, '%Y') = {0}
+                            and (date_format(a.delivery_time, '%m') = {1} OR {1} = '')
                             group by destination_address
                             order by 2 desc
                             ";
 
-            var q = _context.DashboardReport1ViewModel.FromSqlRaw(sql, model.Year).Take(10);
+            var q = _context.DashboardReport1ViewModel.FromSqlRaw(sql, model.Year, model.Month, model.MessageStatus).Take(10);
 
             return Ok(q);
         }
