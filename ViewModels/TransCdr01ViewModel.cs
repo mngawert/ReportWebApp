@@ -49,7 +49,7 @@ namespace ReportWebApp.ViewModels
         public DateTimeOffset DeliveryTime { get; set; }
         //public string SubscriberType { get; set; }
         public int? MessageStatus { get; set; }
-        //public int? MessageType { get; set; }
+        public int? MessageType { get; set; }
         //public string ChargeStatus { get; set; }
         //public string AmountDeducted { get; set; }
         //public string Taskid { get; set; }

@@ -32,7 +32,9 @@ namespace ReportWebApp.ApiControllers
                                     date_format(Delivery_Time, '%d %M %Y %T') as DeliveryTimeText,
                                     Origination_Address as OriginationAddress,
                                     user_data as DestinationAddress, 
-                                    IF(Message_Status=255, 1, 2) as MessageStatus 
+                                    IF(Message_Status=255, 1, 2) as MessageStatus,
+                                    Message_Status as InternalMessageStatus,
+                                    Message_Type as MessageType
                             from 
                             (
                                 select * from TRANS_CDR_01 UNION ALL select * from TRANS_CDR_02 UNION ALL select * from TRANS_CDR_03 UNION ALL select * from TRANS_CDR_04 UNION ALL select * from TRANS_CDR_05 UNION ALL select * from TRANS_CDR_06 UNION ALL select * from TRANS_CDR_07 UNION ALL select * from TRANS_CDR_08 UNION ALL select * from TRANS_CDR_09 UNION ALL select * from TRANS_CDR_10 UNION ALL 
@@ -40,11 +42,14 @@ namespace ReportWebApp.ApiControllers
                                 select * from TRANS_CDR_21 UNION ALL select * from TRANS_CDR_22 UNION ALL select * from TRANS_CDR_23 UNION ALL select * from TRANS_CDR_24 UNION ALL select * from TRANS_CDR_25 UNION ALL select * from TRANS_CDR_26 UNION ALL select * from TRANS_CDR_27 UNION ALL select * from TRANS_CDR_28 UNION ALL select * from TRANS_CDR_29 UNION ALL select * from TRANS_CDR_30 UNION ALL 
                                 select * from TRANS_CDR_31 
                             ) a
-                            where message_type = 1
                             ";
             
             var q = _context.Report1ViewModel.FromSqlRaw(sql);
 
+            if (model.MessageType != null)
+            {
+                q = q.Where(a => a.MessageType == model.MessageType);
+            }
             if (!string.IsNullOrEmpty(model.OriginationAddress))
             {
                 q = q.Where(a => a.OriginationAddress.Contains(model.OriginationAddress));

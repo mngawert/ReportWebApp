@@ -12,6 +12,8 @@ namespace ReportWebApp.ViewModels
         public DateTimeOffset? DeliveryTime { get; set; }
         public string DeliveryTimeText { get; set; }
         public int? MessageStatus { get; set; }
+        public int? InternalMessageStatus { get; set; }
+        public int? MessageType { get; set; }
         public string OriginationAddress { get; set; }
         public string DestinationAddress { get; set; }
     }
