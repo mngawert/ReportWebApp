@@ -2,5 +2,5 @@
 from TRANS_CDR_[ID] a
 where message_type in (1, 4)
 and date_format(a.delivery_time, '%Y') = {0}
-and destination_address = {1}
+and user_data = {1}
 group by date_format(a.delivery_time, '%Y-%m'), date_format(a.delivery_time, '%M')
