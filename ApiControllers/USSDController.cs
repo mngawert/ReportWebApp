@@ -23,27 +23,11 @@ namespace ReportWebApp.ApiControllers
             _context = context;
         }
 
-        [HttpPost]
-        public IActionResult GetReport(TransCdr01RequestViewModel model)
+        public IQueryable<Report1ViewModel> QueryReport(TransCdr01RequestViewModel model, string id)
         {
-            string sql = @"
-                            SELECT  Transaction_Id as TransactionId,
-                                    IF(Delivery_Time='0000-00-00 00:00:00.000',NULL,Delivery_Time) as DeliveryTime,
-                                    date_format(Delivery_Time, '%d %M %Y %T') as DeliveryTimeText,
-                                    Origination_Address as OriginationAddress,
-                                    user_data as DestinationAddress, 
-                                    IF(Message_Status=255, 1, 2) as MessageStatus,
-                                    Message_Status as InternalMessageStatus,
-                                    Message_Type as MessageType
-                            from 
-                            (
-                                select * from TRANS_CDR_01 UNION ALL select * from TRANS_CDR_02 UNION ALL select * from TRANS_CDR_03 UNION ALL select * from TRANS_CDR_04 UNION ALL select * from TRANS_CDR_05 UNION ALL select * from TRANS_CDR_06 UNION ALL select * from TRANS_CDR_07 UNION ALL select * from TRANS_CDR_08 UNION ALL select * from TRANS_CDR_09 UNION ALL select * from TRANS_CDR_10 UNION ALL 
-                                select * from TRANS_CDR_11 UNION ALL select * from TRANS_CDR_12 UNION ALL select * from TRANS_CDR_13 UNION ALL select * from TRANS_CDR_14 UNION ALL select * from TRANS_CDR_15 UNION ALL select * from TRANS_CDR_16 UNION ALL select * from TRANS_CDR_17 UNION ALL select * from TRANS_CDR_18 UNION ALL select * from TRANS_CDR_19 UNION ALL select * from TRANS_CDR_20 UNION ALL 
-                                select * from TRANS_CDR_21 UNION ALL select * from TRANS_CDR_22 UNION ALL select * from TRANS_CDR_23 UNION ALL select * from TRANS_CDR_24 UNION ALL select * from TRANS_CDR_25 UNION ALL select * from TRANS_CDR_26 UNION ALL select * from TRANS_CDR_27 UNION ALL select * from TRANS_CDR_28 UNION ALL select * from TRANS_CDR_29 UNION ALL select * from TRANS_CDR_30 UNION ALL 
-                                select * from TRANS_CDR_31 
-                            ) a
-                            ";
-            
+            string sql = System.IO.File.ReadAllText(@".\SQL\USSD_GETREPORT.sql");
+            sql = sql.Replace("[ID]", id);
+
             var q = _context.Report1ViewModel.FromSqlRaw(sql);
 
             if (model.MessageType != null)
@@ -73,6 +57,39 @@ namespace ReportWebApp.ApiControllers
                 q = q.Where(a => a.MessageStatus == model.MessageStatus);
             }
 
+            return q;
+        }
+
+        public IQueryable<MngmtReportViewModel> QueryMngmtReport(MngmtReportRequest model, string id)
+        {
+            string sql = System.IO.File.ReadAllText(@".\SQL\USSD_GETMNGMTREPORT.sql");
+            sql = sql.Replace("[ID]", id);
+
+            var q = _context.MngmtReportViewModel.FromSqlRaw(sql, model.Year, model.DestinationAddress);
+
+            return q;
+        }
+
+        public IQueryable<DashboardReport1ViewModel> QueryDashboardReport1(DashboardReport1Request model, string id)
+        {
+            string sql = System.IO.File.ReadAllText(@".\SQL\USSD_GETDASHBOARDREPORT.sql");
+            sql = sql.Replace("[ID]", id);
+
+            var q = _context.DashboardReport1ViewModel.FromSqlRaw(sql, model.Year, model.Month, model.MessageStatus).Take(10);
+
+            return q;
+        }
+
+
+        [HttpPost]
+        public IActionResult GetReport(TransCdr01RequestViewModel model)
+        {
+            var q = QueryReport(model, "01");
+            for (int i = 2; i <= 31; i++)
+            {
+                q = q.Concat(QueryReport(model, i.ToString("D2")));
+            }
+
             q = q.OrderByDescending(a => a.DeliveryTime);
 
             var qq = PaginatedList<Report1ViewModel>.Create(q, model.PageNumber ?? 1, model.PageSize ?? 10).GetPaginatedData();
@@ -83,51 +100,48 @@ namespace ReportWebApp.ApiControllers
         [HttpPost]
         public IActionResult GetMngmtReport(MngmtReportRequest model)
         {
-            string sql = @"
-                            select date_format(a.delivery_time, '%Y-%m') as Id, date_format(a.delivery_time, '%M') as Month, count(1) as TotalCount, sum( case when message_status = 255 then 1 else 0 end) as SuccessCount, sum( case when message_status = 255 then 0 else 1 end) as FailCount
-                            from 
-                            (
-                                select * from TRANS_CDR_01 UNION ALL select * from TRANS_CDR_02 UNION ALL select * from TRANS_CDR_03 UNION ALL select * from TRANS_CDR_04 UNION ALL select * from TRANS_CDR_05 UNION ALL select * from TRANS_CDR_06 UNION ALL select * from TRANS_CDR_07 UNION ALL select * from TRANS_CDR_08 UNION ALL select * from TRANS_CDR_09 UNION ALL select * from TRANS_CDR_10 UNION ALL 
-                                select * from TRANS_CDR_11 UNION ALL select * from TRANS_CDR_12 UNION ALL select * from TRANS_CDR_13 UNION ALL select * from TRANS_CDR_14 UNION ALL select * from TRANS_CDR_15 UNION ALL select * from TRANS_CDR_16 UNION ALL select * from TRANS_CDR_17 UNION ALL select * from TRANS_CDR_18 UNION ALL select * from TRANS_CDR_19 UNION ALL select * from TRANS_CDR_20 UNION ALL 
-                                select * from TRANS_CDR_21 UNION ALL select * from TRANS_CDR_22 UNION ALL select * from TRANS_CDR_23 UNION ALL select * from TRANS_CDR_24 UNION ALL select * from TRANS_CDR_25 UNION ALL select * from TRANS_CDR_26 UNION ALL select * from TRANS_CDR_27 UNION ALL select * from TRANS_CDR_28 UNION ALL select * from TRANS_CDR_29 UNION ALL select * from TRANS_CDR_30 UNION ALL 
-                                select * from TRANS_CDR_31 
-                            ) a
-                            where message_type in (1, 4)
-                            and date_format(a.delivery_time, '%Y') = {0}
-                            and destination_address = {1}
-                            group by date_format(a.delivery_time, '%Y-%m'), date_format(a.delivery_time, '%M')
-                            order by 1
-                            ";
+            var q = QueryMngmtReport(model, "01");
+            for (int i = 2; i <= 31; i++)
+            {
+                q = q.Concat(QueryMngmtReport(model, i.ToString("D2")));
+            }
 
-            var q = _context.MngmtReportViewModel.FromSqlRaw(sql, model.Year, model.DestinationAddress);
+            var qq = q
+                .GroupBy(a => new { a.Id, a.Month })
+                .Select(g => new MngmtReportViewModel 
+                {
+                    Id = g.Key.Id, 
+                    Month = g.Key.Month, 
+                    FailCount = g.Sum(b => b.FailCount), 
+                    SuccessCount = g.Sum(b => b.SuccessCount), 
+                    TotalCount = g.Sum(b => b.TotalCount) 
+                });
 
-            return Ok(q);
+            qq = qq.OrderBy(a => a.Id);
+
+            return Ok(qq);
         }
 
         [HttpPost]
         public IActionResult GetDashboardReport1(DashboardReport1Request model)
         {
+            var q = QueryDashboardReport1(model, "01");
+            for (int i = 2; i <= 31; i++)
+            {
+                q = q.Concat(QueryDashboardReport1(model, i.ToString("D2")));
+            }
 
-            string sql = @"
-                            select destination_address as DestinationAddress, count(1) as TotalCount
-                            from 
-                            (
-                                select * from TRANS_CDR_01 UNION ALL select * from TRANS_CDR_02 UNION ALL select * from TRANS_CDR_03 UNION ALL select * from TRANS_CDR_04 UNION ALL select * from TRANS_CDR_05 UNION ALL select * from TRANS_CDR_06 UNION ALL select * from TRANS_CDR_07 UNION ALL select * from TRANS_CDR_08 UNION ALL select * from TRANS_CDR_09 UNION ALL select * from TRANS_CDR_10 UNION ALL 
-                                select * from TRANS_CDR_11 UNION ALL select * from TRANS_CDR_12 UNION ALL select * from TRANS_CDR_13 UNION ALL select * from TRANS_CDR_14 UNION ALL select * from TRANS_CDR_15 UNION ALL select * from TRANS_CDR_16 UNION ALL select * from TRANS_CDR_17 UNION ALL select * from TRANS_CDR_18 UNION ALL select * from TRANS_CDR_19 UNION ALL select * from TRANS_CDR_20 UNION ALL 
-                                select * from TRANS_CDR_21 UNION ALL select * from TRANS_CDR_22 UNION ALL select * from TRANS_CDR_23 UNION ALL select * from TRANS_CDR_24 UNION ALL select * from TRANS_CDR_25 UNION ALL select * from TRANS_CDR_26 UNION ALL select * from TRANS_CDR_27 UNION ALL select * from TRANS_CDR_28 UNION ALL select * from TRANS_CDR_29 UNION ALL select * from TRANS_CDR_30 UNION ALL 
-                                select * from TRANS_CDR_31 
-                            ) a
-                            where message_type = 1
-                            and IF(Message_Status = 255, 'Success', 'Fail') = {2}
-                            and date_format(a.delivery_time, '%Y') = {0}
-                            and (date_format(a.delivery_time, '%m') = {1} OR {1} = '')
-                            group by destination_address
-                            order by 2 desc
-                            ";
+            var qq = q
+                .GroupBy(a => new { a.DestinationAddress })
+                .Select(g => new DashboardReport1ViewModel
+                {
+                    DestinationAddress = g.Key.DestinationAddress,
+                    TotalCount = g.Sum(b => b.TotalCount)
+                });
 
-            var q = _context.DashboardReport1ViewModel.FromSqlRaw(sql, model.Year, model.Month, model.MessageStatus).Take(10);
+            qq = qq.OrderByDescending(a => a.TotalCount);
 
-            return Ok(q);
+            return Ok(qq);
         }
 
     }

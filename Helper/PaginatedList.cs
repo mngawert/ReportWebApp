@@ -57,6 +57,13 @@ namespace ReportWebApp.Helper
         public static PaginatedList<T> Create(IQueryable<T> source, int pageIndex, int pageSize)
         {
             var count = source.Count();
+
+            //debug
+
+            var sql = source.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToString();
+
+            Console.WriteLine("sql:" + sql);
+
             var items = source.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
             return new PaginatedList<T>(items, count, pageIndex, pageSize);
         }

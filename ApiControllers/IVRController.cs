@@ -49,6 +49,7 @@ namespace ReportWebApp.ApiControllers
                                     select * from CALL_IVR_CC_01 UNION ALL select * from CALL_IVR_CC_02 UNION ALL select * from CALL_IVR_CC_03 UNION ALL select * from CALL_IVR_CC_04 UNION ALL select * from CALL_IVR_CC_05 UNION ALL select * from CALL_IVR_CC_06 UNION ALL select * from CALL_IVR_CC_07 UNION ALL select * from CALL_IVR_CC_08 UNION ALL select * from CALL_IVR_CC_09 UNION ALL select * from CALL_IVR_CC_10 UNION ALL
                                     select * from CALL_IVR_CC_11 UNION ALL select * from CALL_IVR_CC_12
                                 ) a
+                                WHERE CALLED_PARTY != '893770053'
                             ) a
                             ";
 
@@ -112,6 +113,7 @@ namespace ReportWebApp.ApiControllers
                                     select * from CALL_IVR_CC_01 UNION ALL select * from CALL_IVR_CC_02 UNION ALL select * from CALL_IVR_CC_03 UNION ALL select * from CALL_IVR_CC_04 UNION ALL select * from CALL_IVR_CC_05 UNION ALL select * from CALL_IVR_CC_06 UNION ALL select * from CALL_IVR_CC_07 UNION ALL select * from CALL_IVR_CC_08 UNION ALL select * from CALL_IVR_CC_09 UNION ALL select * from CALL_IVR_CC_10 UNION ALL
                                     select * from CALL_IVR_CC_11 UNION ALL select * from CALL_IVR_CC_12
                                 ) a
+                                WHERE CALLED_PARTY != '893770053'
                             ) a
                             where date_format(a.delivery_time, '%Y') = {0}
                             and destination_address = {1}
@@ -141,6 +143,7 @@ namespace ReportWebApp.ApiControllers
                                     select * from CALL_IVR_CC_01 UNION ALL select * from CALL_IVR_CC_02 UNION ALL select * from CALL_IVR_CC_03 UNION ALL select * from CALL_IVR_CC_04 UNION ALL select * from CALL_IVR_CC_05 UNION ALL select * from CALL_IVR_CC_06 UNION ALL select * from CALL_IVR_CC_07 UNION ALL select * from CALL_IVR_CC_08 UNION ALL select * from CALL_IVR_CC_09 UNION ALL select * from CALL_IVR_CC_10 UNION ALL
                                     select * from CALL_IVR_CC_11 UNION ALL select * from CALL_IVR_CC_12
                                 ) a
+                                WHERE CALLED_PARTY != '893770053'
                             ) a
                             where date_format(a.delivery_time, '%Y') = {0}
                             and (date_format(a.delivery_time, '%m') = {1} OR {1} = '')
