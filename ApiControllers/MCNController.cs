@@ -124,35 +124,37 @@ namespace ReportWebApp.ApiControllers
             return Ok(q);
         }
 
-        [HttpPost]
-        public IActionResult GetDashboardReport1(DashboardReport1Request model)
+
+        private IQueryable<DashboardReport1ViewModel> QueryDashboardReport1(DashboardReport1Request model, string id)
         {
-            string sql = @"
-                            select destination_address as DestinationAddress, count(1) as TotalCount
-                            from 
-                            (
-                                SELECT  CALL_TIMESTAMP as Delivery_Time,
-                                        TRANSACTION_ID as Transaction_Id,
-                                        ORIGINATING_ADDRESS as Origination_Address,
-                                        DESTINATING_ADDRESS as Destination_Address, 
-                                        STATUS as Message_Status
-                                FROM 
-                                (
-									select * from MCA_VMS_CC_01 UNION ALL select * from MCA_VMS_CC_02 UNION ALL select * from MCA_VMS_CC_03 UNION ALL select * from MCA_VMS_CC_04 UNION ALL select * from MCA_VMS_CC_05 UNION ALL select * from MCA_VMS_CC_06 UNION ALL select * from MCA_VMS_CC_07 UNION ALL select * from MCA_VMS_CC_08 UNION ALL select * from MCA_VMS_CC_09 UNION ALL select * from MCA_VMS_CC_10 UNION ALL
-									select * from MCA_VMS_CC_11 UNION ALL select * from MCA_VMS_CC_12
-                                ) a
-                            ) a
-                            where date_format(a.delivery_time, '%Y') = {0}
-                            and (date_format(a.delivery_time, '%m') = {1} OR {1} = '')
-                            and 'Success' = {2}
-                            /*and IF(Message_Status = 255, 'Success', 'Fail') = {2}*/
-                            group by destination_address
-                            order by 2 desc
-                            ";
+            string sql = System.IO.File.ReadAllText(@".\SQL\MCN_GETDASHBOARDREPORT.sql");
+            sql = sql.Replace("[ID]", id);
 
             var q = _context.DashboardReport1ViewModel.FromSqlRaw(sql, model.Year, model.Month, model.MessageStatus).Take(10);
 
-            return Ok(q);
+            return q;
+        }
+
+        [HttpPost]
+        public IActionResult GetDashboardReport1(DashboardReport1Request model)
+        {
+            var q = QueryDashboardReport1(model, "01");
+            for (int i = 2; i <= 12; i++)
+            {
+                q = q.Concat(QueryDashboardReport1(model, i.ToString("D2")));
+            }
+
+            var qq = q
+                .GroupBy(a => new { a.DestinationAddress })
+                .Select(g => new DashboardReport1ViewModel
+                {
+                    DestinationAddress = g.Key.DestinationAddress,
+                    TotalCount = g.Sum(b => b.TotalCount)
+                });
+
+            qq = qq.OrderByDescending(a => a.TotalCount);
+
+            return Ok(qq);
         }
 
     }
