@@ -26,6 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="SQL\IVR_GETDASHBOARDREPORT.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="SQL\MCN_GETDASHBOARDREPORT.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
