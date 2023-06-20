@@ -3,4 +3,5 @@ from CALL_IVR_CC_[ID] a
 where date_format(a.CALL_START_TIME, '%Y') = {0}
 and (date_format(a.CALL_START_TIME, '%m') = {1} OR {1} = '')
 and 'Success' = {2}
+and service_name <> 'MCA'
 group by CALLED_PARTY

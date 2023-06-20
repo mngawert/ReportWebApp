@@ -23,34 +23,10 @@ namespace ReportWebApp.ApiControllers
             _context = context;
         }
 
-        [HttpPost]
-        public IActionResult GetReport(TransCdr01RequestViewModel model)
+        public IQueryable<Report1ViewModel> QueryReport(TransCdr01RequestViewModel model, string id)
         {
-            string sql = @"
-                            SELECT  Transaction_Id as TransactionId,
-                                    IF(Delivery_Time='0000-00-00 00:00:00.000',NULL,Delivery_Time) as DeliveryTime,
-                                    date_format(Delivery_Time, '%d %M %Y %T') as DeliveryTimeText,
-                                    Origination_Address as OriginationAddress,
-                                    Destination_Address as DestinationAddress, 
-                                    1 as MessageStatus,
-                                    /*IF(Message_Status=255, 1, 2) as MessageStatus,*/
-                                    Message_Status as InternalMessageStatus,
-                                    Message_Type as MessageType
-                            FROM 
-                            (
-                                SELECT  CALL_START_TIME as Delivery_Time,
-                                        TRANSACTION_ID as Transaction_Id,
-                                        CALLING_PARTY as Origination_Address,
-                                        CALLED_PARTY as Destination_Address, 
-                                        STATUS_CODE as Message_Status,
-                                        NULL as Message_Type
-                                FROM 
-                                (
-                                    select * from CALL_IVR_CC_01 UNION ALL select * from CALL_IVR_CC_02 UNION ALL select * from CALL_IVR_CC_03 UNION ALL select * from CALL_IVR_CC_04 UNION ALL select * from CALL_IVR_CC_05 UNION ALL select * from CALL_IVR_CC_06 UNION ALL select * from CALL_IVR_CC_07 UNION ALL select * from CALL_IVR_CC_08 UNION ALL select * from CALL_IVR_CC_09 UNION ALL select * from CALL_IVR_CC_10 UNION ALL
-                                    select * from CALL_IVR_CC_11 UNION ALL select * from CALL_IVR_CC_12
-                                ) a
-                            ) a
-                            ";
+            string sql = System.IO.File.ReadAllText(@".\SQL\IVR_GETREPORT.sql");
+            sql = sql.Replace("[ID]", id);
 
             var q = _context.Report1ViewModel.FromSqlRaw(sql);
 
@@ -81,6 +57,18 @@ namespace ReportWebApp.ApiControllers
                 q = q.Where(a => a.MessageStatus == model.MessageStatus);
             }
 
+            return q;
+        }
+
+        [HttpPost]
+        public IActionResult GetReport(TransCdr01RequestViewModel model)
+        {
+            var q = QueryReport(model, "01");
+            for (int i = 2; i <= 12; i++)
+            {
+                q = q.Concat(QueryReport(model, i.ToString("D2")));
+            }
+
             q = q.OrderByDescending(a => a.DeliveryTime);
 
             var qq = PaginatedList<Report1ViewModel>.Create(q, model.PageNumber ?? 1, model.PageSize ?? 10).GetPaginatedData();
@@ -88,41 +76,39 @@ namespace ReportWebApp.ApiControllers
             return Ok(qq);
         }
 
-        [HttpPost]
-        public IActionResult GetMngmtReport(MngmtReportRequest model)
+        public IQueryable<MngmtReportViewModel> QueryMngmtReport(MngmtReportRequest model, string id)
         {
-            string sql = @"
-                            select 
-                                date_format(a.delivery_time, '%Y-%m') as Id, 
-                                date_format(a.delivery_time, '%M') as Month, 
-                                count(1) as TotalCount, 
-                                count(1) as SuccessCount, 
-                                0 as FailCount
-                                /*sum( case when message_status = 255 then 1 else 0 end) as SuccessCount, 
-                                sum( case when message_status = 255 then 0 else 1 end) as FailCount*/
-                            from 
-                            (
-                                SELECT  CALL_START_TIME as Delivery_Time,
-                                        TRANSACTION_ID as Transaction_Id,
-                                        CALLING_PARTY as Origination_Address,
-                                        CALLED_PARTY as Destination_Address, 
-                                        STATUS_CODE as Message_Status
-                                FROM 
-                                (
-                                    select * from CALL_IVR_CC_01 UNION ALL select * from CALL_IVR_CC_02 UNION ALL select * from CALL_IVR_CC_03 UNION ALL select * from CALL_IVR_CC_04 UNION ALL select * from CALL_IVR_CC_05 UNION ALL select * from CALL_IVR_CC_06 UNION ALL select * from CALL_IVR_CC_07 UNION ALL select * from CALL_IVR_CC_08 UNION ALL select * from CALL_IVR_CC_09 UNION ALL select * from CALL_IVR_CC_10 UNION ALL
-                                    select * from CALL_IVR_CC_11 UNION ALL select * from CALL_IVR_CC_12
-                                ) a
-                                WHERE CALLED_PARTY != '893770053'
-                            ) a
-                            where date_format(a.delivery_time, '%Y') = {0}
-                            and destination_address = {1}
-                            group by date_format(a.delivery_time, '%Y-%m'), date_format(a.delivery_time, '%M')
-                            order by 1
-                            ";
+            string sql = System.IO.File.ReadAllText(@".\SQL\IVR_GETMNGMTREPORT.sql");
+            sql = sql.Replace("[ID]", id);
 
             var q = _context.MngmtReportViewModel.FromSqlRaw(sql, model.Year, model.DestinationAddress);
 
-            return Ok(q);
+            return q;
+        }
+
+        [HttpPost]
+        public IActionResult GetMngmtReport(MngmtReportRequest model)
+        {
+            var q = QueryMngmtReport(model, "01");
+            for (int i = 2; i <= 12; i++)
+            {
+                q = q.Concat(QueryMngmtReport(model, i.ToString("D2")));
+            }
+
+            var qq = q
+                .GroupBy(a => new { a.Id, a.Month })
+                .Select(g => new MngmtReportViewModel
+                {
+                    Id = g.Key.Id,
+                    Month = g.Key.Month,
+                    FailCount = g.Sum(b => b.FailCount),
+                    SuccessCount = g.Sum(b => b.SuccessCount),
+                    TotalCount = g.Sum(b => b.TotalCount)
+                });
+
+            qq = qq.OrderBy(a => a.Id);
+
+            return Ok(qq);
         }
 
         private IQueryable<DashboardReport1ViewModel> QueryDashboardReport1(DashboardReport1Request model, string id)
