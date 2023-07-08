@@ -8,4 +8,3 @@
     NULL as MessageType
 FROM CALL_IVR_CC_[ID] a
 where service_name <> 'MCA'
-limit 100

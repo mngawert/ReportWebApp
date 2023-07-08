@@ -8,4 +8,3 @@
 	Message_Status as InternalMessageStatus,
 	Message_Type as MessageType
 FROM TRANS_CDR_[ID] a
-limit 100

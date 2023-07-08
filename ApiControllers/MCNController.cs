@@ -57,6 +57,7 @@ namespace ReportWebApp.ApiControllers
             {
                 q = q.Where(a => a.MessageStatus == model.MessageStatus);
             }
+            q = q.Take(100);
 
             return q;
         }

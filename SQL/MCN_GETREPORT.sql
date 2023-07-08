@@ -8,4 +8,3 @@
         STATUS as InternalMessageStatus,
         Message_Type as MessageType
 FROM MCA_VMS_CC_[ID] a
-limit 100
